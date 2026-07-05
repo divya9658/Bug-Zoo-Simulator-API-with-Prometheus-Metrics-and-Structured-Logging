@@ -1,4 +1,5 @@
 const db = require("../database/database");
+const logger = require("../../shared/logger");
 
 function saveEvent(event) {
     const { id, timestamp, animal, message, severity } = event;
@@ -22,7 +23,7 @@ function saveEvent(event) {
         ],
         (err) => {
             if (err) {
-                console.error("Failed to save event:", err);
+                logger.error("Failed to save event:", err);
             }
         }
     );
@@ -57,11 +58,30 @@ function getEvents(filters, callback) {
 };
 
 function getStats(callback) {
-    const query = `SELECT severity,COUNT(*) AS count FROM events GROUP BY severity;`
-    db.all(query, [], (err, rows) => {
-        callback(err, rows);
-    });
-};
+    db.all(
+        `
+        SELECT
+            severity,
+            COUNT(*) AS count
+        FROM events
+        GROUP BY severity
+        `,
+        [],
+        (err, rows) => {
+            if (err) {
+                return callback(err);
+            }
+
+            let stats = {};
+
+            for (const row of rows) {
+                stats[row.severity] = row.count;
+            }
+
+            callback(null, stats);
+        }
+    );
+}
 module.exports = {
     saveEvent,
     getEvents,
