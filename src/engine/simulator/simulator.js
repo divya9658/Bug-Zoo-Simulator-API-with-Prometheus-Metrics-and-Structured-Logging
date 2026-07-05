@@ -1,4 +1,6 @@
 const generateEvent = require("./eventGenerator");
+const logger = require("../../shared/logger");
+const eventsGenerated = require("../../shared/metrics").eventsGenerated;
 
 function startSimulation() {
     setInterval(() => {
@@ -8,7 +10,9 @@ function startSimulation() {
 
         saveEvent(event);
 
-        console.log(event);
+        eventsGenerated.inc();
+        logger.info(`${event.animal} - ${event.message} (${event.severity})`);
+        
     }, process.env.SIMULATION_INTERVAL || 2000);
 }
 
