@@ -3,13 +3,27 @@ const express = require('express');
 // const app = express();
 
 const router = express.Router();
-const { getEvents } = require("../../store/repositories/eventRepository");
+const { getEvents, getStats } = require("../../store/repositories/eventRepository");
 
 router.get("/", (req, res) => {
-    getEvents((err, rows) => {
+    const { animal, severity } = req.query;
+
+    getEvents({ animal, severity }, (err, rows) => {
         if (err) {
             return res.status(500).json({
                 error: "Failed to fetch events"
+            });
+        }
+
+        res.json(rows);
+    });
+});
+
+router.get("/stats", (req, res) => {
+    getStats((err, rows) => {
+        if (err) {
+            return res.status(500).json({
+                error: "Failed to fetch event statistics"
             });
         }
 
