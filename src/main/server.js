@@ -2,6 +2,8 @@ require('dotenv').config();
 require("../store/database/database");
 const startSimulation = require("../engine/simulator/simulator");
 const eventRoutes = require("../api/routes/eventRoutes");
+const metricsRoutes = require("../api/routes/metricsRoutes");
+const errorHandler = require("../api/middleware/errorHandler");
 
 const express = require('express');
 const app = express();
@@ -15,6 +17,9 @@ app.get('/', (req, res)=>{
 })
 
 app.use("/events", eventRoutes);
+app.use("/metrics", metricsRoutes);
+
+app.use(errorHandler);
 
 startSimulation();   
 
