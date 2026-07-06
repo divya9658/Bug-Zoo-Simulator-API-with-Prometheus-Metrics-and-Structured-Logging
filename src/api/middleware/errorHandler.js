@@ -1,4 +1,4 @@
-const logger = require("../../shared/logger");
+const logger = require("../../observability/logger");
 
 function errorHandler(err, req, res, next) {
     // Log the detailed error for developers

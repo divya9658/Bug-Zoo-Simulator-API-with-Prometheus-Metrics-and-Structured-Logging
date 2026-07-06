@@ -1,6 +1,6 @@
 const generateEvent = require("./eventGenerator");
-const logger = require("../../shared/logger");
-const eventsGenerated = require("../../shared/metrics").eventsGenerated;
+const logger = require("../../observability/logger");
+const eventsGenerated = require("../../observability/metrics").eventsGenerated;
 
 function startSimulation() {
     setInterval(() => {

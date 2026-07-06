@@ -4,6 +4,8 @@ const startSimulation = require("../engine/simulator/simulator");
 const eventRoutes = require("../api/routes/eventRoutes");
 const metricsRoutes = require("../api/routes/metricsRoutes");
 const errorHandler = require("../api/middleware/errorHandler");
+const traceId = require("../api/middleware/traceMiddleware");
+const requestLogger = require("../api/middleware/requestLogger");
 
 const express = require('express');
 const app = express();
@@ -16,6 +18,9 @@ app.get('/', (req, res)=>{
     })
 })
 
+app.use(traceMiddleware);
+app.use(requestLogger);
+
 app.use("/events", eventRoutes);
 app.use("/metrics", metricsRoutes);
 
@@ -23,6 +28,10 @@ app.use(errorHandler);
 
 startSimulation();   
 
-app.listen(port, () => {
-    console.log(`server running from port ${port}...`);
-})
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Server running on ${port}`);
+    });
+}
+
+module.exports = app;

@@ -1,5 +1,5 @@
 const db = require("../database/database");
-const logger = require("../../shared/logger");
+const logger = require("../../observability/logger");
 
 function saveEvent(event) {
     const { id, timestamp, animal, message, severity } = event;
