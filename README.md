@@ -1,6 +1,6 @@
 # 🐞 Bug Zoo Simulator API
 
-A lightweight backend application that simulates a zoo by continuously generating random animal events. The project demonstrates backend development concepts such as REST APIs, Express.js, SQLite, Repository Pattern, Logging, Prometheus Metrics, and Global Error Handling.
+A lightweight backend application that simulates a zoo by continuously generating random animal events. The project demonstrates real-world backend development concepts such as REST APIs, Express.js, SQLite, Repository Pattern, Structured Logging, Request Tracing, Prometheus Metrics, Automated Testing, and Global Error Handling.
 
 ---
 
@@ -16,8 +16,10 @@ The project was built to understand real-world backend architecture by implement
 - Repository Pattern
 - REST APIs
 - Dynamic SQL Queries
-- Logging using Winston
-- Monitoring using Prometheus
+- Structured Logging with Winston
+- Request Tracing
+- Monitoring with Prometheus
+- Automated Testing
 - Express Middleware
 - Global Error Handling
 
@@ -32,83 +34,104 @@ The project was built to understand real-world backend architecture by implement
 - Filter events by animal
 - Filter events by severity
 - Event statistics using SQL aggregation
-- Structured logging with Winston
+- Structured JSON logging with Winston
+- Request tracing using Trace IDs
+- Request logging middleware
 - Prometheus metrics endpoint
 - Centralized error handling
+- Automated unit tests with Jest
+- Integration tests with Supertest
 - Clean layered architecture
 
 ---
 
 # 🏗️ Project Architecture
 
-```
+```text
                 Client
                    │
                    ▼
-            Express Server
+          Express Application
                    │
-         ┌─────────┴─────────┐
-         ▼                   ▼
-     API Routes         Middleware
-         │                   │
-         ▼                   ▼
-   Repository Layer     Error Handler
-         │
-         ▼
-     SQLite Database
+        ┌──────────┴──────────┐
+        ▼                     ▼
+ Trace Middleware      Request Logger
+        │
+        ▼
+      Routes
+        │
+        ▼
+ Repository Layer
+        │
+        ▼
+   SQLite Database
 
 Background Simulator
-         │
-         ▼
- Event Generator
-         │
-         ▼
- Repository
-         │
-         ▼
- Logger + Prometheus Metrics
+        │
+        ▼
+  Event Generator
+        │
+        ▼
+ Repository Layer
+        │
+        ├── Winston Logger
+        └── Prometheus Metrics
+
+Errors
+   │
+   ▼
+Global Error Handler
 ```
 
 ---
 
 # 📁 Folder Structure
 
-```
-BugZooSimulator/
+```text
+bug-zoo-simulator/
 
 ├── src/
-│
-├── api/
-│   ├── routes/
-│   │   ├── eventRoutes.js
-│   │   └── metricsRoutes.js
+│   ├── api/
+│   │   ├── routes/
+│   │   │   ├── eventRoutes.js
+│   │   │   └── metricsRoutes.js
+│   │   │
+│   │   └── middleware/
+│   │       ├── traceMiddleware.js
+│   │       ├── requestLogger.js
+│   │       └── errorHandler.js
 │   │
-│   └── middleware/
-│       └── errorHandler.js
-│
-├── engine/
-│   └── simulator/
-│       ├── simulator.js
-│       └── eventGenerator.js
-│
-├── shared/
-│   ├── logger.js
-│   └── metrics.js
-│
-├── store/
-│   ├── database/
-│   │   └── database.js
+│   ├── engine/
+│   │   └── simulator/
+│   │       ├── simulator.js
+│   │       └── eventGenerator.js
 │   │
-│   └── repositories/
-│       └── eventRepository.js
+│   ├── observability/
+│   │   ├── logger.js
+│   │   └── metrics.js
+│   │
+│   ├── store/
+│   │   ├── database/
+│   │   │   └── database.js
+│   │   │
+│   │   └── repositories/
+│   │       └── eventRepository.js
+│   │
+│   └── main/
+│       └── server.js
 │
-├── main/
-│   └── server.js
+├── tests/
+│   ├── unit/
+│   │   └── eventGenerator.test.js
+│   │
+│   └── integration/
+│       ├── events.test.js
+│       └── metrics.test.js
 │
 ├── .env.example
 ├── .gitignore
-├── package.json
-└── README.md
+├── README.md
+└── package.json
 ```
 
 ---
@@ -120,6 +143,8 @@ BugZooSimulator/
 - SQLite3
 - Winston
 - Prometheus (prom-client)
+- Jest
+- Supertest
 - dotenv
 - uuid
 
@@ -127,28 +152,32 @@ BugZooSimulator/
 
 # 🔧 Installation
 
-Clone the repository.
+Clone the repository:
 
 ```bash
-git clone https://github.com/divya9658/Bug-Zoo-Simulator-API-with-Prometheus-Metrics-and-Structured-Logging
+git clone https://github.com/divya9658/Bug-Zoo-Simulator-API-with-Prometheus-Metrics-and-Structured-Logging.git
 ```
 
-Install dependencies.
+Navigate to the project directory:
+
+```bash
+cd Bug-Zoo-Simulator-API-with-Prometheus-Metrics-and-Structured-Logging
+```
+
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Create a `.env` file.
-
-Example:
+Create a `.env` file:
 
 ```env
 PORT=3000
 SIMULATION_INTERVAL_MS=2000
 ```
 
-Start the server.
+Start the application:
 
 ```bash
 npm start
@@ -160,7 +189,7 @@ npm start
 
 ## Home
 
-```
+```http
 GET /
 ```
 
@@ -170,7 +199,7 @@ Returns a welcome message.
 
 ## Get All Events
 
-```
+```http
 GET /events
 ```
 
@@ -180,7 +209,7 @@ Returns all generated events.
 
 ## Filter by Animal
 
-```
+```http
 GET /events?animal=Lion
 ```
 
@@ -190,7 +219,7 @@ Returns only Lion events.
 
 ## Filter by Severity
 
-```
+```http
 GET /events?severity=ERROR
 ```
 
@@ -200,17 +229,17 @@ Returns only ERROR events.
 
 ## Filter by Animal and Severity
 
-```
+```http
 GET /events?animal=Lion&severity=WARN
 ```
 
-Returns matching records using dynamic SQL.
+Returns matching records using dynamic SQL filtering.
 
 ---
 
 ## Event Statistics
 
-```
+```http
 GET /events/stats
 ```
 
@@ -232,7 +261,7 @@ Example response:
 
 ## Prometheus Metrics
 
-```
+```http
 GET /metrics
 ```
 
@@ -240,7 +269,7 @@ Returns application metrics in Prometheus format.
 
 Example:
 
-```
+```text
 events_generated_total 245
 ```
 
@@ -302,7 +331,7 @@ Using `.env` improves portability and security.
 
 ## Why Winston?
 
-Winston provides structured logging with different log levels.
+Winston provides structured logging with multiple log levels.
 
 Levels used:
 
@@ -322,34 +351,7 @@ Unlike logs, metrics provide numerical information such as:
 - Total API requests
 - Total errors
 
-This helps monitor application health.
-
----
-
-## Logs vs Metrics
-
-### Logs
-
-Used for debugging.
-
-Example:
-
-```
-INFO Lion Sleeping
-WARN Tiger Escaped
-ERROR Database Failed
-```
-
-### Metrics
-
-Used for monitoring.
-
-Example:
-
-```
-events_generated_total 450
-http_requests_total 900
-```
+This helps monitor application health and performance.
 
 ---
 
@@ -359,9 +361,10 @@ Middleware executes between the request and response.
 
 Uses:
 
-- Authentication
+- Request tracing
 - Logging
-- Error Handling
+- Authentication
+- Error handling
 - Monitoring
 
 ---
@@ -390,24 +393,116 @@ Benefits:
 
 ---
 
+# 📊 Observability
+
+## Logs vs Metrics
+
+### Logs
+
+Used for debugging and understanding application behavior.
+
+Example:
+
+```text
+INFO Lion Sleeping
+WARN Tiger Escaped
+ERROR Database Failed
+```
+
+### Metrics
+
+Used for monitoring trends and system health.
+
+Example:
+
+```text
+events_generated_total 450
+http_requests_total 900
+```
+
+---
+
+## Request Tracing with Trace IDs
+
+Every incoming request receives a unique `trace_id`.
+
+The trace ID is included in logs, making it easy to follow a request through different parts of the application.
+
+Example:
+
+```json
+{
+  "traceId": "8f91b4d2-7a6b-4d67-a4f0-8e2b4d9c9d53",
+  "method": "GET",
+  "url": "/events",
+  "status": 200
+}
+```
+
+Benefits:
+
+- Faster debugging
+- Easier log correlation
+- Improved observability
+- Better production troubleshooting
+
+---
+
 # 📊 Monitoring
 
 Prometheus metrics are available at:
 
-```
+```http
 GET /metrics
 ```
 
-The endpoint returns plain text because Prometheus expects metrics in its own format instead of JSON.
+The endpoint returns plain text because Prometheus expects metrics in its own format rather than JSON.
+
+---
+
+# 🧪 Testing
+
+The application includes both unit and integration tests.
+
+## Unit Tests
+
+Unit tests validate the event generation logic.
+
+Covered scenarios:
+
+- INFO severity generation
+- WARN severity generation
+- ERROR severity generation
+- Event object structure validation
+
+Randomness is controlled by mocking `Math.random()` to ensure deterministic and reliable test results.
+
+## Integration Tests
+
+Integration tests validate API behavior.
+
+Covered endpoints:
+
+- `GET /events`
+- `GET /events?severity=ERROR`
+- `GET /metrics`
+
+The tests verify response formats, filtering behavior, and Prometheus metric exposure.
+
+Run tests using:
+
+```bash
+npm test
+```
 
 ---
 
 # 🔐 Environment Variables
 
-| Variable            | Description                              |
-| ------------------- | ---------------------------------------- |
-| PORT                | Server port                              |
-| SIMULATION_INTERVAL | Event generation interval (milliseconds) |
+| Variable               | Description                               |
+| ---------------------- | ----------------------------------------- |
+| PORT                   | Server port                               |
+| SIMULATION_INTERVAL_MS | Event generation interval in milliseconds |
 
 ---
 
@@ -415,7 +510,7 @@ The endpoint returns plain text because Prometheus expects metrics in its own fo
 
 - PostgreSQL support
 - Docker containerization
-- Automated testing using Jest & Supertest
+- Dedicated test database for integration tests
 - Swagger/OpenAPI documentation
 - Authentication & Authorization
 - Pagination for events
@@ -428,18 +523,22 @@ The endpoint returns plain text because Prometheus expects metrics in its own fo
 
 This project helped reinforce the following backend concepts:
 
-- Express.js fundamentals
-- REST API development
+- Express.js Fundamentals
+- REST API Development
 - Express Router
 - Environment Variables
-- SQLite integration
+- SQLite Integration
 - Repository Pattern
 - Dynamic SQL Queries
 - SQL Aggregation (`GROUP BY`)
 - Logging with Winston
 - Prometheus Monitoring
+- Request Tracing
 - Middleware
 - Global Error Handling
+- Automated Testing
+- Mocking and Test Isolation
+- API Integration Testing
 - Layered Architecture
 - Separation of Concerns
 - DRY Principle
@@ -447,8 +546,8 @@ This project helped reinforce the following backend concepts:
 
 ---
 
-# 👩‍💻 Author
+# 👨‍💻 Author
 
-Konathala Divyateja
+**Konathala Divyateja**
 
-Developed as a backend learning project to understand real-world Node.js architecture and software engineering principles.
+Developed as a backend learning project to understand real-world Node.js architecture, observability, testing, and software engineering principles.
